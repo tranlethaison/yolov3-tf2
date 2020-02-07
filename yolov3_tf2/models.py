@@ -174,7 +174,15 @@ def yolo_boxes(pred, anchors, classes):
     return bbox, objectness, class_probs, pred_box
 
 
-def yolo_nms(outputs, anchors, masks, classes):
+def yolo_nms(
+    outputs,
+    anchors,
+    masks,
+    classes,
+    yolo_max_boxes=100,
+    yolo_iou_threshold=0.5,
+    yolo_score_threshold=0.5,
+):
     # boxes, conf, type
     b, c, t = [], [], []
 
@@ -192,10 +200,14 @@ def yolo_nms(outputs, anchors, masks, classes):
         boxes=tf.reshape(bbox, (tf.shape(bbox)[0], -1, 1, 4)),
         scores=tf.reshape(
             scores, (tf.shape(scores)[0], -1, tf.shape(scores)[-1])),
-        max_output_size_per_class=FLAGS.yolo_max_boxes,
-        max_total_size=FLAGS.yolo_max_boxes,
-        iou_threshold=FLAGS.yolo_iou_threshold,
-        score_threshold=FLAGS.yolo_score_threshold
+        # max_output_size_per_class=FLAGS.yolo_max_boxes,
+        # max_total_size=FLAGS.yolo_max_boxes,
+        # iou_threshold=FLAGS.yolo_iou_threshold,
+        # score_threshold=FLAGS.yolo_score_threshold
+        max_output_size_per_class=yolo_max_boxes,
+        max_total_size=yolo_max_boxes,
+        iou_threshold=yolo_iou_threshold,
+        score_threshold=yolo_score_threshold
     )
 
     return boxes, scores, classes, valid_detections
